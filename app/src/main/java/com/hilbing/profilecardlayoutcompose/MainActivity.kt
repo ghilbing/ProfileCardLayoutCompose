@@ -34,12 +34,17 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(userProfiles: List<UserProfile> = userProfileList) {
     Scaffold(topBar = {AppBar()}) {
         Surface(
             modifier = Modifier.fillMaxSize(),
         ){
-            ProfileCard()
+            Column {
+                for(userProfile in userProfiles)
+                    ProfileCard(userProfile = userProfile)
+
+            }
+
         }
     }
 
@@ -58,10 +63,10 @@ fun AppBar(){
 }
 
 @Composable
-fun ProfileCard(){
+fun ProfileCard(userProfile: UserProfile){
     Card(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(top = 8.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
             .fillMaxWidth()
             .wrapContentHeight(align = Alignment.Top),
         elevation = 8.dp,
@@ -72,8 +77,8 @@ fun ProfileCard(){
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            ProfilePicture()
-            ProfileContent()
+            ProfilePicture(userProfile.drawableId, userProfile.status)
+            ProfileContent(userProfile.name, userProfile.status)
         }
 
 
@@ -81,17 +86,21 @@ fun ProfileCard(){
 }
 
 @Composable
-fun ProfilePicture(){
+fun ProfilePicture(drawableId: Int, onlineStatus: Boolean){
     Card(
         shape = CircleShape,
         border = BorderStroke(
             width = 2.dp,
-            color = MaterialTheme.colors.lightGreen),
+            color = if(onlineStatus)
+                MaterialTheme.colors.lightGreen
+            else
+                Color.Red
+        ),
         modifier = Modifier.padding(16.dp),
         elevation = 4.dp
     ){
         Image(
-            painter = painterResource(id = R.drawable.gretel),
+            painter = painterResource(drawableId),
             contentDescription = "Image",
             modifier = Modifier.size(72.dp),
             contentScale = ContentScale.Crop
@@ -101,7 +110,7 @@ fun ProfilePicture(){
 }
 
 @Composable
-fun ProfileContent(){
+fun ProfileContent(userName: String, onlineStatus: Boolean){
     Column(
         modifier = Modifier
             .padding(8.dp)
@@ -109,13 +118,17 @@ fun ProfileContent(){
             ) {
 
         Text(
-            text = "Gretel",
+            text =  userName,
             style = MaterialTheme.typography.h5
         )
 
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+
             Text(
-                text = "Active now",
+                text =  if(onlineStatus)
+                    "Active now"
+                else
+                    "Offline",
                 style = MaterialTheme.typography.body2
             )
         }

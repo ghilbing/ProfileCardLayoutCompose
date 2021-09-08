@@ -8,5 +8,17 @@ data class UserProfile constructor(
 val userProfileList = arrayListOf<UserProfile>(
     UserProfile(name = "Gretel Hilbing", status = true, R.drawable.gretel),
     UserProfile(name = "Bata", status = false, R.drawable.bata),
+    UserProfile(name = "Silvana", status = true, R.drawable.silvana),
+    UserProfile(name = "Gretel Hilbing", status = true, R.drawable.gretel),
+    UserProfile(name = "Bata", status = false, R.drawable.bata),
+    UserProfile(name = "Silvana", status = true, R.drawable.silvana),
+    UserProfile(name = "Gretel Hilbing", status = true, R.drawable.gretel),
+    UserProfile(name = "Bata", status = false, R.drawable.bata),
+    UserProfile(name = "Silvana", status = true, R.drawable.silvana),
+    UserProfile(name = "Gretel Hilbing", status = true, R.drawable.gretel),
+    UserProfile(name = "Bata", status = false, R.drawable.bata),
+    UserProfile(name = "Silvana", status = true, R.drawable.silvana),
+    UserProfile(name = "Gretel Hilbing", status = true, R.drawable.gretel),
+    UserProfile(name = "Bata", status = false, R.drawable.bata),
     UserProfile(name = "Silvana", status = true, R.drawable.silvana)
 )

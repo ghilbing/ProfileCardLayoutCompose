@@ -89,7 +89,7 @@ fun ProfileCard(userProfile: UserProfile){
 }
 
 @Composable
-fun ProfilePicture(drawableId: Int, onlineStatus: Boolean){
+fun ProfilePicture(drawableId: String, onlineStatus: Boolean){
     Card(
         shape = CircleShape,
         border = BorderStroke(

@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,6 +22,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navArgument
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
 import com.hilbing.profilecardlayoutcompose.ui.theme.ProfileCardLayoutComposeTheme
@@ -31,14 +39,34 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ProfileCardLayoutComposeTheme {
-                MainScreen()
+                UsersApplication()
             }
         }
     }
 }
 
 @Composable
-fun MainScreen(userProfiles: List<UserProfile> = userProfileList) {
+//Navigation for composables
+fun UsersApplication(userProfiles: List<UserProfile> = userProfileList){
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "users_list"){
+        composable("users_list"){
+            MainScreen(userProfiles, navController)
+        }
+        composable(
+            route = "user_details/{userId}",
+        arguments = listOf(navArgument("userId")
+        {
+            type = NavType.IntType
+        }))
+        { navBackStackEntry ->
+            UserProfileDetailsScreen(navBackStackEntry.arguments!!.getInt("userId"))
+        }
+    }
+}
+
+@Composable
+fun MainScreen(userProfiles: List<UserProfile>, navController: NavHostController?) {
     Scaffold(topBar = {AppBar()}) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -46,7 +74,9 @@ fun MainScreen(userProfiles: List<UserProfile> = userProfileList) {
             LazyColumn() {
                 items(userProfiles){
                     userProfile ->
-                    ProfileCard(userProfile = userProfile)
+                    ProfileCard(userProfile = userProfile){
+                        navController?.navigate("user_details/${userProfile.id}")
+                    }
                 }
             }
         }
@@ -67,12 +97,13 @@ fun AppBar(){
 }
 
 @Composable
-fun ProfileCard(userProfile: UserProfile){
+fun ProfileCard(userProfile: UserProfile, clickAction: () -> Unit){
     Card(
         modifier = Modifier
             .padding(top = 8.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
             .fillMaxWidth()
-            .wrapContentHeight(align = Alignment.Top),
+            .wrapContentHeight(align = Alignment.Top)
+            .clickable(onClick = { clickAction.invoke() }),
         elevation = 8.dp,
         backgroundColor = Color.White)
     {
@@ -149,7 +180,8 @@ fun ProfileContent(userName: String, onlineStatus: Boolean, alignment: Alignment
 }
 
 @Composable
-fun UserProfileDetailsScreen(userProfile: UserProfile = userProfileList[0]) {
+fun UserProfileDetailsScreen(userId: Int) {
+    val userProfile = userProfileList.first { userProfile -> userId == userProfile.id }
     Scaffold(topBar = {AppBar()}) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -172,7 +204,7 @@ fun UserProfileDetailsScreen(userProfile: UserProfile = userProfileList[0]) {
 @Composable
 fun UserProfileDetailsPreview() {
     ProfileCardLayoutComposeTheme {
-        UserProfileDetailsScreen()
+        UserProfileDetailsScreen(userId = 0)
     }
 
 }
@@ -181,7 +213,7 @@ fun UserProfileDetailsPreview() {
 @Composable
 fun DefaultPreview() {
     ProfileCardLayoutComposeTheme {
-        MainScreen()
+        MainScreen(userProfiles = userProfileList, null)
     }
 
 }
